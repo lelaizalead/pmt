@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    working_dir: /var/www/html
+    volumes:
+      - ./laravel-app:/var/www/html  # Laravel uygulaman
+    environment:
+      - COMPOSER_MEMORY_LIMIT=-1
+
+  webserver:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+     - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Oluşturduğun default.conf dosyasını bağla
+     - ./laravel-app:/var/www/html  # Laravel uygulamanın dosyalarını bağla
+    depends_on:
+      - app
+
+  db:
+    image: mysql
+    container_name: mysql-db
+    environment:
+        MYSQL_ROOT_PASSWORD: Lalea1234+
+    ports:
+      - "3307:3306"

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Tasks</h1>
+<div id="tasks">Loading ...</div>
+
+<script>
+function getProjectId() {
+ 
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    return urlParams.get('id');
+}
+
+function loadTasks() {
+    const projectId = getProjectId();
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", `http://localhost/api/tasks/${projectId}`, true);
+    xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            const data = JSON.parse(xhr.responseText);
+            console.log(data);
+
+          
+            let tasksHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Task Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+           
+            data.forEach(task => {
+                tasksHtml += `
+                    <tr>
+                        <td>${task.id}</td>
+                        <td>${task.name}</td>
+                        <td>${task.description}</td>
+                    </tr>
+                `;
+            });
+
+            tasksHtml += `
+                    </tbody>
+                </table>
+            `;
+
+         
+            document.getElementById("tasks").innerHTML = tasksHtml;
+        } else {
+            console.error("Hata:", xhr.statusText);
+            document.getElementById("tasks").innerHTML = "Görevler yüklenirken hata oluştu.";
+        }
+    };
+    xhr.send();
+}
+
+
+window.onload = loadTasks;
+</script>
+
+</body>
+</html>
